@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP8266 Academy - Plataforma de Aprendizagem IoT</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-16">
+                    <div class="logo">
+                        <span class="logo-icon">🔧</span>
+                        <span class="logo-text">ESP8266 Academy</span>
+                    </div>
+                    <nav class="nav-menu">
+                        <button class="nav-item active" data-view="curriculum">📚 Currículo</button>
+                        <button class="nav-item" data-view="practice">💻 Prática</button>
+                        <button class="nav-item" data-view="dashboard">📊 Dashboard</button>
+                        <button class="nav-item" data-view="community">👥 Comunidade</button>
+                    </nav>
+                </div>
+                <div class="user-stats">
+                    <div class="xp-display">
+                        <span class="xp-icon">⚡</span>
+                        <span class="xp-value" id="userXP">0</span>
+                        <span class="xp-label">XP</span>
+                    </div>
+                    <div class="level-display">
+                        <span class="level-icon">🏆</span>
+                        <span class="level-value" id="userLevel">1</span>
+                    </div>
+                    <div class="streak-display">
+                        <span class="streak-icon">🔥</span>
+                        <span class="streak-value" id="userStreak">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Welcome/Curriculum View -->
+        <section id="curriculumView" class="view-section active">
+            <div class="container">
+                <div class="welcome-banner">
+                    <div class="welcome-content">
+                        <h1>Bem-vindo ao ESP8266 Academy</h1>
+                        <p>Aprenda desenvolvimento IoT através de tutoriais interativos e projetos práticos</p>
+                        <div class="progress-overview">
+                            <div class="progress-stat">
+                                <span class="stat-value" id="completedLessons">0</span>
+                                <span class="stat-label">Lições Concluídas</span>
+                            </div>
+                            <div class="progress-stat">
+                                <span class="stat-value" id="completedModules">0</span>
+                                <span class="stat-label">Módulos Completos</span>
+                            </div>
+                            <div class="progress-stat">
+                                <span class="stat-value" id="totalBadges">0</span>
+                                <span class="stat-label">Badges Conquistadas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="esp8266-visual">
+                        <div class="board-container">
+                            <div class="esp8266-board">
+                                <div class="pin gpio-2" data-pin="2" title="GPIO 2 - LED"></div>
+                                <div class="pin gpio-0" data-pin="0" title="GPIO 0 - Button"></div>
+                                <div class="pin gpio-4" data-pin="4" title="GPIO 4 - DHT22"></div>
+                                <div class="wifi-indicator" id="wifiStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Curriculum Modules -->
+                <div class="curriculum-grid" id="curriculumGrid">
+                    <!-- Modules will be dynamically populated -->
+                </div>
+
+                <!-- Achievements Section -->
+                <div class="achievements-section">
+                    <h2>🏆 Conquistas Disponíveis</h2>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Achievements will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice/Lesson View -->
+        <section id="practiceView" class="view-section">
+            <div class="lesson-container">
+                <!-- Lesson Header -->
+                <header class="lesson-header">
+                    <div class="lesson-nav">
+                        <button class="btn btn--secondary btn--sm" id="backToCurriculum">← Voltar ao Currículo</button>
+                        <div class="lesson-info">
+                            <h2 id="lessonTitle">Carregando...</h2>
+                            <div class="lesson-meta">
+                                <span class="difficulty" id="lessonDifficulty"></span>
+                                <span class="time-estimate" id="lessonTime"></span>
+                                <span class="xp-reward" id="lessonXP"></span>
+                            </div>
+                        </div>
+                        <div class="lesson-actions">
+                            <button class="btn btn--outline btn--sm" id="resetCode">🔄 Reset</button>
+                            <button class="btn btn--outline btn--sm" id="showHint">💡 Dica</button>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="lessonProgress"></div>
+                    </div>
+                </header>
+
+                <!-- Lesson Content -->
+                <div class="lesson-content">
+                    <!-- Theory Panel -->
+                    <div class="theory-panel">
+                        <div class="panel-header">
+                            <h3>📖 Teoria</h3>
+                            <button class="toggle-panel" data-panel="theory">−</button>
+                        </div>
+                        <div class="panel-content" id="theoryContent">
+                            <p>Conteúdo teórico será carregado aqui...</p>
+                        </div>
+                    </div>
+
+                    <!-- Code Editor -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <h3>💻 Editor de Código</h3>
+                            <div class="editor-actions">
+                                <button class="btn btn--primary btn--sm" id="runCode">▶️ Executar</button>
+                                <button class="btn btn--secondary btn--sm" id="runTests">🧪 Testar</button>
+                            </div>
+                        </div>
+                        <div class="editor-container">
+                            <div id="codeEditor"></div>
+                        </div>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div class="output-panel">
+                        <div class="panel-tabs">
+                            <button class="tab active" data-tab="console">Console</button>
+                            <button class="tab" data-tab="tests">Testes</button>
+                            <button class="tab" data-tab="simulator">Simulador</button>
+                        </div>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="consoleTab">
+                                <div class="console-output" id="consoleOutput">
+                                    <div class="output-line info">ESP8266 Academy - Console Output</div>
+                                    <div class="output-line">Clique em "Executar" para rodar seu código...</div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane" id="testsTab">
+                                <div class="test-results" id="testResults">
+                                    <div class="test-info">Clique em "Testar" para validar sua solução...</div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane" id="simulatorTab">
+                                <div class="device-simulator">
+                                    <div class="simulator-header">
+                                        <h4>ESP8266 Virtual</h4>
+                                        <div class="device-status">
+                                            <span class="status-indicator" id="devicePower">🔴</span>
+                                            <span>Desligado</span>
+                                        </div>
+                                    </div>
+                                    <div class="simulator-board">
+                                        <div class="virtual-esp8266">
+                                            <div class="gpio-pins">
+                                                <div class="pin-group">
+                                                    <div class="pin-indicator" data-gpio="0">
+                                                        <span class="pin-label">GPIO 0</span>
+                                                        <div class="pin-status off"></div>
+                                                    </div>
+                                                    <div class="pin-indicator" data-gpio="2">
+                                                        <span class="pin-label">GPIO 2</span>
+                                                        <div class="pin-status off"></div>
+                                                    </div>
+                                                    <div class="pin-indicator" data-gpio="4">
+                                                        <span class="pin-label">GPIO 4</span>
+                                                        <div class="pin-status off"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="device-info">
+                                                <div class="memory-usage">
+                                                    <span>Memória: <span id="memoryUsage">0/160 KB</span></span>
+                                                    <div class="memory-bar">
+                                                        <div class="memory-fill" id="memoryFill"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="connectivity-status">
+                                                    <div class="wifi-status">
+                                                        <span class="status-icon">📶</span>
+                                                        <span id="wifiStatusText">WiFi: Desconectado</span>
+                                                    </div>
+                                                    <div class="mqtt-status">
+                                                        <span class="status-icon">📡</span>
+                                                        <span id="mqttStatusText">MQTT: Desconectado</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completion Modal -->
+                <div class="modal hidden" id="completionModal">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>🎉 Lição Concluída!</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="completion-stats">
+                                <div class="stat">
+                                    <span class="stat-icon">⚡</span>
+                                    <span class="stat-value" id="earnedXP">0</span>
+                                    <span class="stat-label">XP Ganho</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-icon">⭐</span>
+                                    <span class="stat-value" id="lessonScore">0</span>
+                                    <span class="stat-label">Pontuação</span>
+                                </div>
+                            </div>
+                            <div class="new-badges" id="newBadges"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn--secondary" id="reviewLesson">📝 Revisar</button>
+                            <button class="btn btn--primary" id="nextLesson">➡️ Próxima Lição</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard View -->
+        <section id="dashboardView" class="view-section">
+            <div class="container">
+                <h1>📊 Dashboard de Progresso</h1>
+                
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Progresso Geral</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="progressChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Estatísticas Semanais</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="weeklyLessons">0</span>
+                                    <span class="stat-label">Lições Esta Semana</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="weeklyXP">0</span>
+                                    <span class="stat-label">XP Esta Semana</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="avgScore">0%</span>
+                                    <span class="stat-label">Pontuação Média</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>🏆 Badges Conquistadas</h3>
+                            <div class="user-badges" id="userBadges">
+                                <!-- User badges will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>📈 Atividade Recente</h3>
+                            <div class="activity-list" id="recentActivity">
+                                <!-- Recent activity will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community View -->
+        <section id="communityView" class="view-section">
+            <div class="container">
+                <h1>👥 Comunidade</h1>
+                <div class="community-content">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>🚀 Em Desenvolvimento</h3>
+                            <p>Recursos da comunidade serão adicionados em breve:</p>
+                            <ul>
+                                <li>Fórum de discussões</li>
+                                <li>Compartilhamento de soluções</li>
+                                <li>Leaderboard</li>
+                                <li>Mentoria</li>
+                                <li>Desafios da comunidade</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification Toast -->
+    <div class="toast hidden" id="toast">
+        <div class="toast-content">
+            <span class="toast-icon"></span>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
